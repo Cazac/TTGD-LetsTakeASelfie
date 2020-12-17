@@ -7,30 +7,80 @@ public class GoProController : MonoBehaviour
 
     public GameObject GoProHand;
 
-
+    public PlayerMovement playerMovement;
 
 
     private void Update()
     {
-        //Player Input To Move Camera
-        MoveCameraByInput();
+        if (GameSettingsController.Instance.isGoProUsingMouse)
+        {
+            MoveCameraByMouse();
+        }
+        else
+        {
+            //Player Input To Move Camera
+            MoveCameraByInput();
 
-        //Move Camera By Gravity
-        MoveCameraByBalence();
+            //Move Camera By Gravity
+            MoveCameraByBalence();
 
-        //Move the Player With The Camera
-        MovePlayerByGoProPostion();
+            //Move the Player With The Camera
+            MovePlayerByGoProPostion();
+        }
 
+        
+        //selfie Mode safe check
+        if (playerMovement == null)
+        {
+            return;
+        }
 
+        if (GameSettingsController.Instance.isGoProAffectingSpeed)
+        {
 
+            Vector3 currentRotation = GoProHand.transform.rotation.eulerAngles;
 
+            //Forwards
+            if (currentRotation.z >= 180)
+            {
+                //How Close to 270??
+                float mag = Mathf.Abs(currentRotation.z - 290);
+                mag = 1 - (mag / 90);
 
+                //print("Test Code: Magnitude Forwards " + mag);
 
+                if (playerMovement.gameObject.transform.GetChild(0).localRotation.eulerAngles.y == 0)
+                {
+                    playerMovement.speedMultiplier = (1.6f * mag) + 1f;
+                }
+                else if (playerMovement.gameObject.transform.GetChild(0).localRotation.eulerAngles.y == 180)
+                {
+                    playerMovement.speedMultiplier = (0f * mag) + 1f;
+                }
+            }
+            //Back
+            else
+            {
+                //How Close to 90??
+                float mag = Mathf.Abs(currentRotation.z - 70);
+                mag = 1 - (mag / 90);
 
+                //print("Test Code: Magnitude Back " + mag);
 
-
-
-
+                if (playerMovement.gameObject.transform.GetChild(0).localRotation.eulerAngles.y == 0)
+                {
+                    playerMovement.speedMultiplier = (0f * mag) + 1f;
+                }
+                else if (playerMovement.gameObject.transform.GetChild(0).localRotation.eulerAngles.y == 180)
+                {
+                    playerMovement.speedMultiplier = (1.6f * mag) + 1f;
+                }
+            }
+        }
+        else
+        {
+            playerMovement.speedMultiplier = 0;
+        }
     }
 
     ///////////////////////////////////////////////////////
@@ -71,10 +121,10 @@ public class GoProController : MonoBehaviour
             if (currentRotation.z >= 180)
             {
                 //How Close to 270??
-                float mag = Mathf.Abs(currentRotation.z - 270);
-                mag = 1 - (mag / 90);
+                //float mag = Mathf.Abs(currentRotation.z - 270);
+                //mag = 1 - (mag / 90);
 
-                print("Test Code: Magnitude " + mag);
+                //print("Test Code: Magnitude " + mag);
 
 
                 //Move Camrea Right
@@ -83,12 +133,12 @@ public class GoProController : MonoBehaviour
             else
             {
                 //How Close to 90??
-                float mag = Mathf.Abs(currentRotation.z - 90);
-                mag = 1 - (mag / 90);
+                //float mag = Mathf.Abs(currentRotation.z - 90);
+                //mag = 1 - (mag / 90);
 
 
 
-                print("Test Code: Magnitude " + mag);
+                //print("Test Code: Magnitude " + mag);
 
 
 
@@ -113,24 +163,54 @@ public class GoProController : MonoBehaviour
             if (currentRotation.z >= 180)
             {
                 //How Close to 270??
-                float mag = Mathf.Abs(currentRotation.z - 270);
+                float mag = Mathf.Abs(currentRotation.z - 290);
                 mag = 1 - (mag / 90);
 
-                print("Test Code: Magnitude " + mag);
+                //print("Test Code: Magnitude " + mag);
             }
             else
             {
                 //How Close to 90??
-                float mag = Mathf.Abs(currentRotation.z - 90);
+                float mag = Mathf.Abs(currentRotation.z - 70);
                 mag = 1 - (mag / 90);
 
 
 
-                print("Test Code: Magnitude " + mag);
+                //print("Test Code: Magnitude " + mag);
             }
         }
     }
 
+    private void MoveCameraByMouse()
+    {
+        Vector2 mousePostion = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 handVector = new Vector2(GoProHand.transform.position.x, GoProHand.transform.position.y);
+
+
+
+
+        float angle = Vector2.Angle(handVector, mousePostion);
+
+        angle = AngleInDeg(handVector, mousePostion);
+        angle -= 90;
+
+        GoProHand.transform.eulerAngles = new Vector3(0, 0, angle);
+        //GoProHand.transform.eulerAngles = new Vector3(0, 0, Vector2.Angle(worldPosition, GoProHand.transform.position));
+    }
+
+
+
+    //This returns the angle in radians
+    public static float AngleInRad(Vector3 vec1, Vector3 vec2)
+    {
+        return Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x);
+    }
+
+    //This returns the angle in degrees
+    public static float AngleInDeg(Vector3 vec1, Vector3 vec2)
+    {
+        return AngleInRad(vec1, vec2) * 180 / Mathf.PI;
+    }
 
     ///////////////////////////////////////////////////////
 }

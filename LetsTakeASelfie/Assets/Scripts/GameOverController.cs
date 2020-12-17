@@ -39,6 +39,8 @@ public class GameOverController : MonoBehaviour
 
     public void Button_Title(string reason)
     {
+        Time.timeScale = 1;
+
         //Title
         SceneManager.LoadScene("Title Screen");
     }
@@ -61,7 +63,7 @@ public class GameOverController : MonoBehaviour
         gameOverUI_Panel.SetActive(true);
 
         //Set Reason
-        reasonForBan_Text.text = "Reason For Ban: " + reason;
+        //reasonForBan_Text.text = "Reason For Ban: " + reason;
 
 
         //Disable Movement ?

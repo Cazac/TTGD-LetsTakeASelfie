@@ -19,13 +19,13 @@ public class GameSettingsController : MonoBehaviour
     public float goProRotationSpeed;
     public float goProMomentumSpeed;
     public bool isGoProUsingMomentum;
+    public bool isGoProUsingMouse;
     public bool isGoProAffectingSpeed;
     public bool isGoProUsingBalence;
     public bool isGoProAccelerationOnly;
 
     [Header("Camera Options")]
-    [Range(0, 1f)]
-    public float cameraSpeed;
+    public float cameraIntroSize;
 
     ///////////////////////////////////////////////////////
 
